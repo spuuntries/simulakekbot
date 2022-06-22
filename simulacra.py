@@ -654,7 +654,7 @@ class StreamRatingButtons(AbstractButtons):
         num_ratings += 1
         embed = message.embeds[0].set_field_at(0, name="Ratings",
                                                value=num_ratings)
-        await message.edit(view=self, embed=embed)
+        await interaction.followup.edit(view=self, embed=embed)
         # Send next message in the chain
         gen, ratings_count, flags = self.get_next_image_to_rate()
         db = sqlite3.connect('db.sqlite')
