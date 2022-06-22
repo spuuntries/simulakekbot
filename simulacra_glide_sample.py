@@ -62,6 +62,7 @@ def load_model_from_config(config, ckpt, verbose=False):
         print(u)
 
     model.cuda()
+    model.half()
     model.eval()
     return model
 
