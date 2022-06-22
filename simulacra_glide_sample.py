@@ -50,7 +50,7 @@ def spherical_dist_loss(x, y):
 
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
-    pl_sd = torch.load(ckpt, map_location="cpu")
+    pl_sd = torch.load(ckpt, map_location="cuda")
     sd = pl_sd["state_dict"]
     model = instantiate_from_config(config.model)
     m, u = model.load_state_dict(sd, strict=False)
@@ -142,7 +142,7 @@ def main(opt):
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")  # TODO: Optionally download from same location as ckpt and chnage this logic
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")  # TODO: check path
 
-    device = torch.device("cuda")
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     print(device)
     model = model.to(device)
 
