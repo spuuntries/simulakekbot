@@ -15,7 +15,7 @@ import threading
 import queue
 import nextcord
 from nextcord.ext import commands
-from simulacra_imagen_sample import main as gen # TODO: Change this to not-gen
+from simulacra_glide_sample import main as gen # TODO: Change this to not-gen
 # Global conflicts with other variables
 from yfcc_upscale import main as upscale
 from collections import namedtuple
