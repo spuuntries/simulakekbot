@@ -742,7 +742,7 @@ class BatchRateStream(AbstractButtons):
         upload = nextcord.File(str(generation[0]) + "_" + generation[-1].replace(" ", "_").replace("/","_") +
                            "_" + str(self.image_ids[-1][2]) + ".png")
         
-        await interaction.response.send_message(
+        await interaction.followup.send(
             f"{self.image_ids[-1][2]}. " + generation[-1],
             file=upload,
             embed=embed,
