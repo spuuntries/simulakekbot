@@ -61,7 +61,7 @@ def load_model_from_config(config, ckpt, verbose=False):
         print("unexpected keys:")
         print(u)
 
-    model.cuda()
+    model = model.half().cuda()
     model.eval()
     return model
 
@@ -167,7 +167,8 @@ def main(opt):
 
     all_samples=list()
     with torch.no_grad():
-        with model.ema_scope():
+        with torch.cuda.amp.autocast():
+          with model.ema_scope():
             uc = None
             if opt.scale != 1.0:
                 uc = model.get_learned_conditioning(opt.n_samples * [""])
