@@ -654,7 +654,7 @@ class StreamRatingButtons(AbstractButtons):
         num_ratings += 1
         embed = message.embeds[0].set_field_at(0, name="Ratings",
                                                value=num_ratings)
-        await interaction.followup.edit(view=self, embed=embed)
+        await message.edit(view=self, embed=embed)
         # Send next message in the chain
         gen, ratings_count, flags = self.get_next_image_to_rate()
         db = sqlite3.connect('db.sqlite')
@@ -719,6 +719,11 @@ class BatchRateStream(AbstractButtons):
         # Make sure our ratings are in sync
         assert (f"{index[2]}. " + generation[-1]) == message.content
         ratings.record_rating(interaction.user.id, generation[0], rating, index = index[2])
+        num_ratings = int(message.embeds[0].fields[0].value)
+        num_ratings += 1
+        embed = message.embeds[0].set_field_at(0, name="Ratings",
+                                               value=num_ratings)
+        await interaction.followup.edit(view=self, embed=embed)
         if not self.image_ids: # End condition
             return
         
