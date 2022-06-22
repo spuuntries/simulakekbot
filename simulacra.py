@@ -723,7 +723,8 @@ class BatchRateStream(AbstractButtons):
         num_ratings += 1
         embed = message.embeds[0].set_field_at(0, name="Ratings",
                                                value=num_ratings)
-        await interaction.edit_original_message(view=self, embed=embed)
+        og = await interaction.original_message()
+        await og.edit(view=self, embed=embed)
         if not self.image_ids: # End condition
             return
         
