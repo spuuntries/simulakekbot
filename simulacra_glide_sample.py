@@ -143,6 +143,7 @@ def main(opt):
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")  # TODO: check path
 
     device = torch.device("cuda")
+    print(device)
     model = model.to(device)
 
     cloob_config = pretrained.get_config(opt.cloob_checkpoint)
