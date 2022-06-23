@@ -1,5 +1,8 @@
 # Simulacra Aesthetic Captions Bot
 
+> My fork mainly does changes to the imagen branch,
+> Please check that branch out instead.
+
 ## Introduction
 
 This discord bot is used for collecting the Simulacra Aesthetic Captions dataset, a
