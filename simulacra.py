@@ -1064,7 +1064,7 @@ async def add(interaction: nextcord.Interaction):
             return
     prompt = interaction.message.content.split(".add")[1].strip()
     seed = generations.get_next_seed()
-    if len(prompt) > (255 - 9 - len(seed)): # Must be able to fit <seed>_<prompt>_grid.png so inference doesn't crash
+    if len(prompt) > (255 - 10 - len(seed)): # Must be able to fit <seed>_<prompt>_grid.png so inference doesn't crash
         await interaction.send("The length of the prompt wouldn't fit on the "
                                "filesystem. Please shorten it and try again.")
         return
