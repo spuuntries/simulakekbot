@@ -1090,7 +1090,22 @@ async def add(interaction: nextcord.Interaction):
     else:
         await interaction.message.add_reaction('👎')
         await interaction.message.add_reaction('2️⃣')
-        
+
+@bot.command()
+async def parse(interaction: nextcord.Interaction):
+    valcontent = re.search("[0-9]+_.*_\d\.png", interaction.message.content)
+    reatt = [re.search("[0-9]+_.*_\d\.png", att.proxy_url) for att in interaction.attachments]
+    reatt.append(valcontent)
+    valatt = any(a != None for a in reatt)
+    if not valatt:
+        await interaction.message.reply("None of the attachments nor content matches the filename schema!"
+                "Please check again and retry")
+        return
+    pregex = "[0-9]+_"
+    sregex = "_[0-9]+\.png"
+    res = "\n".join([i+s for i,s in enumerate((lambda x: x.replace("_", " "))((lambda x: re.sub(sregex, "", x))(re.sub(pregex, "", s))) for s in reatt)])
+    await interaction.send(content=res)
+
 @bot.command()
 async def rate(interaction: nextcord.Interaction):
     if type(interaction.channel) != nextcord.channel.DMChannel:
