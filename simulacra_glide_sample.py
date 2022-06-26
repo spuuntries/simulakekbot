@@ -7,7 +7,7 @@ from torchvision.transforms import functional as TF
 import numpy as np
 from omegaconf import OmegaConf
 from PIL import Image
-from tqdm import tqdm, trange
+from tqdm.auto import tqdm, trange
 from einops import rearrange
 from torchvision.utils import make_grid
 
@@ -50,7 +50,7 @@ def spherical_dist_loss(x, y):
 
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
-    pl_sd = torch.load(ckpt, map_location="cpu")
+    pl_sd = torch.load(ckpt, map_location="cuda")
     sd = pl_sd["state_dict"]
     model = instantiate_from_config(config.model)
     m, u = model.load_state_dict(sd, strict=False)
@@ -61,7 +61,7 @@ def load_model_from_config(config, ckpt, verbose=False):
         print("unexpected keys:")
         print(u)
 
-    model.cuda()
+    model = model.half().cuda()
     model.eval()
     return model
 
@@ -143,6 +143,7 @@ def main(opt):
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")  # TODO: check path
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    print(device)
     model = model.to(device)
 
     cloob_config = pretrained.get_config(opt.cloob_checkpoint)
@@ -166,7 +167,8 @@ def main(opt):
 
     all_samples=list()
     with torch.no_grad():
-        with model.ema_scope():
+        with torch.cuda.amp.autocast():
+          with model.ema_scope():
             uc = None
             if opt.scale != 1.0:
                 uc = model.get_learned_conditioning(opt.n_samples * [""])

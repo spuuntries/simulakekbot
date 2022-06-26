@@ -15,7 +15,7 @@ import threading
 import queue
 import nextcord
 from nextcord.ext import commands
-from simulacra_imagen_sample import main as gen # TODO: Change this to not-gen
+from simulacra_glide_sample import main as gen # TODO: Change this to not-gen
 # Global conflicts with other variables
 from yfcc_upscale import main as upscale
 from collections import namedtuple
@@ -726,7 +726,7 @@ class BatchRateStream(AbstractButtons):
         num_ratings += 1
         embed = message.embeds[0].set_field_at(0, name="Ratings",
                                                value=num_ratings)
-        await message.edit(view=self, embed=embed)
+        await interaction.response.edit_message(view=self, embed=embed)
         if not self.image_ids: # End condition
             return
         
@@ -745,10 +745,11 @@ class BatchRateStream(AbstractButtons):
         upload = nextcord.File(str(generation[0]) + "_" + generation[-1].replace(" ", "_").replace("/","_") +
                            "_" + str(self.image_ids[-1][2]) + ".png")
         
-        await interaction.user.send(
+        await interaction.followup.send(
             f"{self.image_ids[-1][2]}. " + generation[-1],
             file=upload,
             embed=embed,
+            ephemeral=True,
             view=self)
 
     @nextcord.ui.button(label="Flag", custom_id="flag", style=nextcord.ButtonStyle.danger, row=4)
@@ -1065,11 +1066,11 @@ async def add(interaction: nextcord.Interaction):
             await interaction.send("'{}' is not an allowed word by the content filter".format(word))
             return
     prompt = interaction.message.content.split(".add")[1].strip()
-    if len(prompt) > 246: # Must be able to fit _grid.png on end.
-        await interaction.send("The length of the prompt wouldn't fit on the "
-                               "filesystem. Please shorten it and try again.")
-        return
     seed = generations.get_next_seed()
+    if len(prompt) > (255 - 10 - len(str(seed))): # Must be able to fit <seed>_<prompt>_grid.png so inference doesn't crash
+        await interaction.send("The length of the prompt wouldn't fit on the "
+                               "filesystem, current max length is {}. Please shorten it and try again.".format((255 - 10 - len(str(seed)))))
+        return
     job = Job(prompt=prompt,
               cloob_checkpoint='cloob_laion_400m_vit_b_16_16_epochs',
               scale=5.,
@@ -1092,6 +1093,21 @@ async def add(interaction: nextcord.Interaction):
     else:
         await interaction.message.add_reaction('👎')
         await interaction.message.add_reaction('2️⃣')
+
+@bot.command()
+async def parse(interaction: nextcord.Interaction):
+    valcontent = re.search("[0-9]+_.*_\d\.png", interaction.message.content)
+    reatt = [re.search("[0-9]+_.*_\d\.png", att.proxy_url) for att in interaction.attachments]
+    reatt.append(valcontent)
+    valatt = any(a != None for a in reatt)
+    if not valatt:
+        await interaction.message.reply("None of the attachments nor content matches the filename schema!"
+                "Please check again and retry")
+        return
+    pregex = "[0-9]+_"
+    sregex = "_[0-9]+\.png"
+    res = "\n".join([i+s for i,s in enumerate((lambda x: x.replace("_", " "))((lambda x: re.sub(sregex, "", x))(re.sub(pregex, "", s))) for s in reatt)])
+    await interaction.send(content=res)
 
 @bot.command()
 async def rate(interaction: nextcord.Interaction):
