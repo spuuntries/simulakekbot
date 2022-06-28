@@ -1098,7 +1098,7 @@ async def add(interaction: nextcord.Interaction):
 @bot.command()
 async def parse(interaction: nextcord.Interaction):
     valcontent = re.search("[0-9]+_.*_\d\.png", interaction.message.content)
-    reatt = [re.search("[0-9]+_.*_\d\.png", att.proxy_url) for att in interaction.attachments]
+    reatt = [re.search("[0-9]+_.*_\d\.png", att.proxy_url) for att in interaction.message.attachments]
     reatt.append(valcontent)
     valatt = any(a != None for a in reatt)
     if not valatt:
