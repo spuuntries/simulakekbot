@@ -16,4 +16,4 @@ def seed_all(seed_value=None):
         torch.cuda.manual_seed_all(seed_value)  # gpu vars
         torch.backends.cudnn.deterministic = True  # needed
         torch.backends.cudnn.benchmark = False
-    return seed_value 
+    return seed_value
