@@ -10,6 +10,7 @@ from PIL import Image
 from tqdm.auto import tqdm, trange
 from einops import rearrange
 from torchvision.utils import make_grid
+from seed_all import seed_all
 
 from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
@@ -137,8 +138,15 @@ def main(opt):
         default=5.0,
         help="unconditional guidance scale: eps = eps(x, empty) + scale * (eps(x, cond) - eps(x, empty))",
     )
+
+    parser.add_argument(
+        "--seed",
+        type=int,
+        help="seed for seed_all",
+    )
     # opt = parser.parse_args()
 
+    seed_all(opt.seed)
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")  # TODO: Optionally download from same location as ckpt and chnage this logic
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")  # TODO: check path
 
