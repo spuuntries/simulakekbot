@@ -522,7 +522,7 @@ class AbstractButtons(nextcord.ui.View):
         embed = nextcord.Embed(title="Feedback", description="")
         embed.add_field(name="Ratings", value=ratings_count)
         embed.add_field(name="Flags", value=flags)
-        await interaction.user.send(
+        await interaction.response.send_message(
             "2. " + prompt,
             file=upload,
             view=view,
