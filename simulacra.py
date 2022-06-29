@@ -526,7 +526,8 @@ class AbstractButtons(nextcord.ui.View):
             "2. " + prompt,
             file=upload,
             view=view,
-            embed=embed
+            embed=embed,
+            ephemeral=True
         )
         button.style = nextcord.ButtonStyle.green
         await interaction.message.edit(view=self)
