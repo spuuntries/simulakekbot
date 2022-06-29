@@ -1,7 +1,7 @@
 # Zippy's seed_all function
 from numpy.random import MT19937, RandomState, SeedSequence
 import random, numpy as np, time
-
+import torch
 
 def seed_all(seed_value=None):
     new_state = RandomState(MT19937(SeedSequence(int(time.time_ns()) % (2**32 - 1))))
